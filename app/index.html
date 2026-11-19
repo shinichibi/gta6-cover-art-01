@@ -33,7 +33,22 @@
     </section>
 
     <section>
-      <h2>2 · Panel</h2>
+      <h2>2 · Cast &amp; scenes</h2>
+      <p class="hint">Illustrated plates drawn for VICE FRAME — a cast of six and five neon-coast scenes. Click one to drop it into the selected panel, and mix them freely with your own photos.</p>
+      <div id="library-strip" class="library"></div>
+    </section>
+
+    <section>
+      <h2>3 · Showcase cover</h2>
+      <p class="hint">One click builds a finished blockbuster cover from the cast library — then every tool here can still restyle it:</p>
+      <div class="row">
+        <button class="btn gold" id="showcase-ensemble" type="button">Showcase: Ensemble</button>
+        <button class="btn gold" id="showcase-duo" type="button">Showcase: Duo Leads</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>4 · Panel</h2>
       <p class="hint">Click a panel on the cover to select it, then drag the photo inside it or zoom:</p>
       <label class="slider-row">Zoom
         <input id="zoom" type="range" min="100" max="250" value="115">
@@ -42,7 +57,7 @@
     </section>
 
     <section>
-      <h2>3 · Layout</h2>
+      <h2>5 · Layout</h2>
       <div class="row segmented" role="group" aria-label="Collage layout">
         <button class="btn on" type="button" data-layout="classic">Classic Collage</button>
         <button class="btn" type="button" data-layout="mosaic">Mosaic Grid</button>
@@ -51,7 +66,7 @@
     </section>
 
     <section>
-      <h2>4 · Vice City grade</h2>
+      <h2>6 · Vice City grade</h2>
       <div class="row segmented" role="group" aria-label="Grade preset">
         <button class="btn on" type="button" data-preset="sunset">Sunset Vice</button>
         <button class="btn" type="button" data-preset="midnight">Midnight Neon</button>
@@ -68,7 +83,7 @@
     </section>
 
     <section>
-      <h2>5 · Words</h2>
+      <h2>7 · Words</h2>
       <label class="field">Game title
         <input id="title-input" type="text" value="VICE FRAME" maxlength="30">
       </label>
@@ -78,7 +93,7 @@
     </section>
 
     <section>
-      <h2>6 · Export</h2>
+      <h2>8 · Export</h2>
       <label class="field">Size
         <select id="size-select">
           <option value="portrait" selected>Portrait 1080 × 1350</option>

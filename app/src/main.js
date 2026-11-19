@@ -6,6 +6,7 @@
 // this file owns the state and the conversation with the page.
 
 import { LAYOUTS, renderCover, hitPanel } from './cover.js';
+import { LIBRARY, LIBRARY_BY_ID, SHOWCASES } from './library.js';
 
 const SIZES = {
   portrait: { w: 1080, h: 1350, label: 'Portrait 1080 × 1350' },
@@ -107,6 +108,109 @@ function loadSample(path, name) {
   });
 }
 
+/** Load a bundled plate (or any bundled path) into the photo list once. */
+function ensurePhoto(src, name) {
+  const existing = photos.findIndex((p) => p.name === name);
+  if (existing >= 0) return Promise.resolve(existing);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      photos.push({ img, name });
+      resolve(photos.length - 1);
+    };
+    img.onerror = () => resolve(-1);
+    img.src = src;
+  });
+}
+
+// ------------------------------------------------------------- cast library
+
+const libraryEl = $('library-strip');
+const libButtons = new Map();
+
+function buildLibrary() {
+  if (!libraryEl) return;
+  for (const kind of ['Cast', 'Scenes']) {
+    const heading = document.createElement('h3');
+    heading.textContent = kind;
+    const row = document.createElement('div');
+    row.className = 'lib-row';
+    for (const item of LIBRARY.filter((i) => i.kind === kind)) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lib-item';
+      btn.title = `Put “${item.name}” in panel ${state.selected + 1}`;
+      const thumb = document.createElement('img');
+      thumb.src = item.src;
+      thumb.alt = '';
+      const label = document.createElement('span');
+      label.textContent = item.name;
+      btn.append(thumb, label);
+      btn.addEventListener('click', async () => {
+        const idx = await ensurePhoto(item.src, item.name);
+        if (idx < 0) return;
+        state.panels[state.selected].photo = idx;
+        drawChips();
+        describeSelection();
+        render();
+        setStatus(`“${item.name}” is in panel ${state.selected + 1}. Drag it on the cover or zoom it, or cast another plate.`);
+      });
+      libButtons.set(item.id, btn);
+      row.appendChild(btn);
+    }
+    libraryEl.append(heading, row);
+  }
+}
+
+/** Mark the library plate that currently sits in the selected panel. */
+function refreshLibrary() {
+  const slot = state.panels[state.selected];
+  const current = slot && slot.photo >= 0 && photos[slot.photo] ? photos[slot.photo].name : null;
+  for (const [id, btn] of libButtons) {
+    btn.classList.toggle('on', LIBRARY_BY_ID.get(id).name === current);
+  }
+}
+
+// ------------------------------------------------------------- showcases
+
+async function applyShowcase(key) {
+  const sc = SHOWCASES[key];
+  if (!sc) return;
+  setStatus(`Casting the ${sc.label} cover…`);
+  const idxs = [];
+  for (const panel of sc.panels) {
+    const item = LIBRARY_BY_ID.get(panel.id);
+    idxs.push(await ensurePhoto(item.src, item.name));
+  }
+  if (idxs.some((i) => i < 0)) {
+    setStatus('A library plate failed to load — the showcase was not applied.');
+    return;
+  }
+  state.layout = sc.layout;
+  document.querySelectorAll('[data-layout]').forEach((b) => b.classList.toggle('on', b.dataset.layout === sc.layout));
+  state.preset = sc.preset;
+  document.querySelectorAll('[data-preset]').forEach((b) => b.classList.toggle('on', b.dataset.preset === sc.preset));
+  state.intensity = sc.intensity;
+  $('intensity').value = String(Math.round(sc.intensity * 100));
+  $('intensity-val').textContent = `${Math.round(sc.intensity * 100)}%`;
+  state.caption = sc.caption;
+  $('caption-input').value = sc.caption;
+  if (!state.title.trim()) {
+    state.title = 'VICE FRAME';
+    $('title-input').value = state.title;
+  }
+  state.panels.forEach((slot, i) => {
+    const panel = sc.panels[i];
+    if (panel) Object.assign(slot, { photo: idxs[i], ox: panel.ox, oy: panel.oy, zoom: panel.zoom });
+    else Object.assign(slot, blankSlot());
+  });
+  state.selected = 0;
+  syncZoom();
+  drawChips();
+  render();
+  setStatus(`${sc.label} showcase built — the whole cast, graded and lettered. Restyle it with the grade presets, or export your PNG.`);
+}
+
 function drawChips() {
   chipsEl.innerHTML = '';
   if (photos.length === 0) {
@@ -136,6 +240,7 @@ function drawChips() {
     });
     chipsEl.appendChild(chip);
   });
+  refreshLibrary();
 }
 
 // ------------------------------------------------------------- panel play
@@ -345,6 +450,9 @@ $('export-png').addEventListener('click', () => {
 
 // ------------------------------------------------------------- first paint
 
+buildLibrary();
+$('showcase-ensemble').addEventListener('click', () => applyShowcase('ensemble'));
+$('showcase-duo').addEventListener('click', () => applyShowcase('duo'));
 syncZoom();
 drawChips();
 describeSelection();
