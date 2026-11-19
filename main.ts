@@ -6,7 +6,7 @@
 // library to write that dossier with the bounty's own caps, so the bytes
 // here are exactly the bytes the scorer would produce itself.
 
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-app.ts';
@@ -14,8 +14,10 @@ import { buildDossier } from './vendor/makefun-app.ts';
 const here = dirname(fileURLToPath(import.meta.url));
 const out = '/output';
 
-rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
+for (const child of readdirSync(out)) {
+  rmSync(join(out, child), { recursive: true, force: true });
+}
 cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
 cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 
