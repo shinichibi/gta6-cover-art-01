@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VICE FRAME — Cover Studio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-badge">VI</span>
+    <div>
+      <h1>VICE FRAME</h1>
+      <p>Cover studio — turn any photo into neon-coast cover art.</p>
+    </div>
+  </div>
+  <p class="offline-note">100% offline · your photos never leave this device</p>
+</header>
+
+<main class="layout">
+  <aside class="panel" aria-label="Cover controls">
+    <section>
+      <h2>1 · Photos</h2>
+      <div class="row">
+        <label class="btn primary" for="file-input">Upload photo</label>
+        <input id="file-input" type="file" accept="image/*" multiple hidden>
+        <button class="btn" id="sample-boulevard" type="button">Sample: Neon Boulevard</button>
+        <button class="btn" id="sample-pier" type="button">Sample: Sunset Pier</button>
+      </div>
+      <div id="photo-chips" class="chips"></div>
+      <button class="btn wide" id="fill-all" type="button">Fill all panels with the selected photo</button>
+    </section>
+
+    <section>
+      <h2>2 · Panel</h2>
+      <p class="hint">Click a panel on the cover to select it, then drag the photo inside it or zoom:</p>
+      <label class="slider-row">Zoom
+        <input id="zoom" type="range" min="100" max="250" value="115">
+        <span id="zoom-val">115%</span>
+      </label>
+    </section>
+
+    <section>
+      <h2>3 · Layout</h2>
+      <div class="row segmented" role="group" aria-label="Collage layout">
+        <button class="btn on" type="button" data-layout="classic">Classic Collage</button>
+        <button class="btn" type="button" data-layout="mosaic">Mosaic Grid</button>
+        <button class="btn" type="button" data-layout="hero">Full-Bleed Hero</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>4 · Vice City grade</h2>
+      <div class="row segmented" role="group" aria-label="Grade preset">
+        <button class="btn on" type="button" data-preset="sunset">Sunset Vice</button>
+        <button class="btn" type="button" data-preset="midnight">Midnight Neon</button>
+        <button class="btn" type="button" data-preset="chrome">Chrome Day</button>
+      </div>
+      <label class="slider-row">Intensity
+        <input id="intensity" type="range" min="0" max="100" value="85">
+        <span id="intensity-val">85%</span>
+      </label>
+      <label class="check-row">
+        <input id="halftone" type="checkbox">
+        Halftone print texture
+      </label>
+    </section>
+
+    <section>
+      <h2>5 · Words</h2>
+      <label class="field">Game title
+        <input id="title-input" type="text" value="VICE FRAME" maxlength="30">
+      </label>
+      <label class="field">Caption line
+        <input id="caption-input" type="text" value="WELCOME BACK TO THE CITY OF NEON" maxlength="60">
+      </label>
+    </section>
+
+    <section>
+      <h2>6 · Export</h2>
+      <label class="field">Size
+        <select id="size-select">
+          <option value="portrait" selected>Portrait 1080 × 1350</option>
+          <option value="square">Square 1080 × 1080</option>
+          <option value="wide">Wide 1920 × 1080</option>
+        </select>
+      </label>
+      <div class="row">
+        <button class="btn" id="auto-cover" type="button">Auto cover</button>
+        <button class="btn primary big" id="export-png" type="button">Export PNG</button>
+      </div>
+    </section>
+  </aside>
+
+  <section class="stage-wrap">
+    <div id="stage" class="stage">
+      <canvas id="cover" width="1080" height="1350"></canvas>
+      <p class="drop-hint">Drop photos here</p>
+    </div>
+    <p id="status" class="status" role="status"></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>VICE FRAME is a fan-made cover studio. Every cover is drawn in your browser, on a canvas, from your own photos.</p>
+</footer>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
